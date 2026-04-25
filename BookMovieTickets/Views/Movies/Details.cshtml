@@ -1,0 +1,49 @@
+﻿@model BookMovieTickets.Models.Movie
+
+<div class="container mt-5">
+
+    <div class="row">
+
+        <!-- Image -->
+        <div class="col-md-5">
+            <img src="~/images/download.jpg" />
+            @* class="card-img-top"
+            style="height: 300px; object-fit: cover;" /> *@
+        </div>
+
+        <!-- Details -->
+        <div class="col-md-7">
+
+            <h2 class="mb-3">@Model.Name</h2>
+
+            <p class="text-muted">@Model.Description</p>
+
+            <hr />
+
+            <h5>💰 Price: <span class="text-success">@Model.Price EGP</span></h5>
+
+            <h5>
+                🎭 Status:
+                @if (Model.Status)
+                {
+                    <span class="text-success">Available</span>
+                }
+                else
+                {
+                    <span class="text-danger">Not Available</span>
+                }
+            </h5>
+
+            <h5>📅 Date: @Model.DateTime.ToString("dd MMM yyyy")</h5>
+
+            <hr />
+
+            <button class="btn btn-success btn-lg w-100 mt-3">
+                🎟️ Book Now
+            </button>
+
+        </div>
+
+    </div>
+
+</div>

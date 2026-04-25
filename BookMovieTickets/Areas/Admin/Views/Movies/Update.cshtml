@@ -1,0 +1,103 @@
+﻿@model BookMovieTickets.ViewModels.MovieVM
+
+@{
+    ViewData["Title"] = "Update Movie";
+}
+
+<h2 class="mb-4">Update Movie</h2>
+
+<form asp-area="Admin" asp-controller="Movies" asp-action="Update" method="post" enctype="multipart/form-data">
+
+    <input type="hidden" asp-for="Id" />
+
+    <!-- Name -->
+    <div class="form-group mb-3">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group mb-3">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <!-- Price -->
+    <div class="form-group mb-3">
+        <label>Price</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+
+    <!-- Status -->
+    <div class="form-group mb-3">
+        <label>
+            <input asp-for="Status" type="checkbox" />
+            Available
+        </label>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group mb-3">
+        <label>Date</label>
+        <input asp-for="DateTime" type="datetime-local" class="form-control" />
+    </div>
+
+    <!-- Category -->
+    <div class="form-group mb-3">
+        <label>Category</label>
+        <select asp-for="CategoryId" class="form-control">
+            <option value="">-- Select Category --</option>
+            @foreach (var item in Model.Categories)
+            {
+                <option value="@item.Id" selected="@(item.Id == Model.CategoryId)">
+                    @item.Name
+                </option>
+            }
+        </select>
+    </div>
+
+    <!-- Cinema -->
+    <div class="form-group mb-3">
+        <label>Cinema</label>
+        <select asp-for="CinemaId" class="form-control">
+            <option value="">-- Select Cinema --</option>
+            @foreach (var item in Model.Cinemas)
+            {
+                <option value="@item.Id" selected="@(item.Id == Model.CinemaId)">
+                    @item.Name
+                </option>
+            }
+        </select>
+    </div>
+
+    <!-- Actors -->
+    <div class="form-group mb-3">
+        <label>Actors</label>
+
+        <div>
+            @foreach (var actor in Model.Actors)
+            {
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="ActorIds"
+                           value="@actor.Id"
+                           @(Model.ActorIds.Contains(actor.Id) ? "checked" : "") />
+
+                    <label class="form-check-label">
+                        @actor.Name
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

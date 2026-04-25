@@ -1,0 +1,108 @@
+﻿@model BookMovieTickets.ViewModels.MovieVM
+
+@{
+    ViewData["Title"] = "Add Movie";
+}
+
+<h2 class="mb-4">Add Movie</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <!-- Name -->
+    <div class="form-group mb-3">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group mb-3">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Main Image -->
+    <div class="form-group mb-3">
+        <label>Main Image</label>
+        <input asp-for="MainImg" type="file" class="form-control" accept="image/*" />
+        <span asp-validation-for="MainImg" class="text-danger"></span>
+    </div>
+
+    <!-- Sub Images -->
+    <div class="form-group mb-3">
+        <label>Sub Images</label>
+        <input asp-for="SubImages" type="file" multiple class="form-control" accept="image/*" />
+    </div>
+
+    <!-- Price -->
+    <div class="form-group mb-3">
+        <label>Price</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <!-- Status -->
+    <div class="form-group mb-3">
+        <label>
+            <input asp-for="Status" type="checkbox" />
+            Available
+        </label>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group mb-3">
+        <label>Date</label>
+        <input asp-for="DateTime" type="datetime-local" class="form-control" />
+        <span asp-validation-for="DateTime" class="text-danger"></span>
+    </div>
+
+    <!-- Category -->
+    <div class="form-group mb-3">
+        <label>Category</label>
+        <select asp-for="CategoryId" class="form-control" required>
+            <option value="">-- Select Category --</option>
+            @foreach (var item in Model.Categories)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <!-- Cinema -->
+    <div class="form-group mb-3">
+        <label>Cinema</label>
+        <select asp-for="CinemaId" class="form-control" required>
+            <option value="">-- Select Cinema --</option>
+            @foreach (var item in Model.Cinemas)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CinemaId" class="text-danger"></span>
+    </div>
+
+    <!-- Actors -->
+    <div class="form-group mb-3">
+        <label>Actors</label>
+        <div>
+            @foreach (var actor in Model.Actors)
+            {
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="ActorIds" value="@actor.Id" id="actor_@actor.Id" />
+                    <label class="form-check-label" for="actor_@actor.Id">@actor.Name</label>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

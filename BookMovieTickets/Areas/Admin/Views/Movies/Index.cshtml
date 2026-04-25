@@ -1,0 +1,107 @@
+﻿@model IEnumerable<BookMovieTickets.Models.Movie>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Movies";
+}
+
+<h2 class="mb-4">Movies List</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+    + Add New Movie
+</a>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Cinema</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
+            @* <th>Actors</th> *@
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="~/images/@item.MainImg" width="70" height="90" style="object-fit:cover;" />
+                </td>
+
+                <td>@item.Name</td>
+
+                <td>@item.Category?.Name</td>
+
+                <td>@item.Cinema?.Name</td>
+
+                <td>@item.Price</td>
+
+                <td>
+                    @if (item.Status)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </td>
+
+                <td>@item.DateTime.ToString("yyyy-MM-dd")</td>
+
+                @* <td>
+                    @foreach (var actor in item.Actors)
+                    {
+                        <span class="badge bg-secondary">@actor.Name</span>
+                    }
+                </td> *@
+
+                <td>
+                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-primary">
+                        Edit
+                    </a>
+                    @* <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a> *@
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<style>
+    body {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    .table {
+        background-color: #111827;
+        color: white;
+    }
+
+        .table thead {
+            background-color: #020617;
+            color: white;
+        }
+
+        .table tbody tr {
+            background-color: #111827;
+        }
+
+            .table tbody tr:hover {
+                background-color: #1e293b;
+            }
+
+        .table td, .table th {
+            border-color: #2c2c2c;
+        }
+
+    h2 {
+        color: white;
+    }
+</style>
