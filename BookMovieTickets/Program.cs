@@ -1,4 +1,6 @@
 ﻿using BookMovieTickets.Data;
+using BookMovieTickets.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookMovieTickets
 {
@@ -13,6 +15,12 @@ namespace BookMovieTickets
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+           options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -12,13 +12,11 @@ namespace BookMovieTickets.ViewModel
 
         public bool? IsExciting { get; set; }
 
-        public DateTime? Date { get; set; }   // 🔥 مهم للـ ShowTime
+        public DateTime? Date { get; set; }   
 
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 8;
         public int TotalPages { get; set; }
-
-        // 🔥 النتائج
         public List<Movie> Movies { get; set; } = new();
     }
 }

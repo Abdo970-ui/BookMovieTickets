@@ -1,21 +1,45 @@
 ﻿using BookMovieTickets.Data;
+using BookMovieTickets.Models;
+using BookMovieTickets.Repositories;
 using BookMovieTickets.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BookMovieTickets.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class HomeController : Controller
     {
-        ApplicationDbContext _context = new ApplicationDbContext();
+        //ApplicationDbContext _context = new ApplicationDbContext();
+        IRepository<Category> _categoryRepository; //= new Repository<Category>();
+        IRepository<Actor> _actorRepository; //= new Repository<Actor>();
+        IRepository<Cinema> _cinemaRepository; //= new Repository<Cinema>();
+        IRepository<Movie> _movieRepository;// = new Repository<Movie>();
+        IRepository<MovieImage> _movieImageRepository;// = new Repository<Movie>();
 
-        public IActionResult Index(FilterMovieVM vm)
+        public HomeController(IRepository<Category> categoryRepository, IRepository<Actor> actorRepository, IRepository<Cinema> cinemaRepository, IRepository<Movie> movieRepository, IRepository<MovieImage> movieImageRepository)
         {
-            var query = _context.Movies
-                .Include(m => m.Category)
-                .Where(m => m.Status == true)
-                .AsQueryable();
+            _categoryRepository = categoryRepository;
+            _actorRepository = actorRepository;
+            _cinemaRepository = cinemaRepository;
+            _movieRepository = movieRepository;
+            _movieImageRepository = movieImageRepository;
+        }
+
+        public async Task<IActionResult> Index(FilterMovieVM vm)
+        {
+            //var query = _context.Movies
+            //    .Include(m => m.Category)
+            //    .Where(m => m.Status == true)
+            //    .AsQueryable();
+
+                var query = await _movieRepository.GetAsync(
+                 filter: m => m.Status == true,
+                  includes: new Expression<Func<Movie, object>>[]
+                  {
+                       m => m.Category
+                  });
 
 
             if (!string.IsNullOrEmpty(vm.MovieName))
@@ -66,8 +90,11 @@ namespace BookMovieTickets.Areas.Customer.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            ViewBag.Cinemas = _context.Cinemas.ToList();
-            ViewBag.Categories = _context.Categories.ToList();
+            //ViewBag.Cinemas = _context.Cinemas.ToList();
+            //ViewBag.Categories = _context.Categories.ToList();
+
+            ViewBag.Cinemas =await _cinemaRepository.GetAsync();
+            ViewBag.Categories = await _categoryRepository.GetAsync();
 
             return View(vm);
         }

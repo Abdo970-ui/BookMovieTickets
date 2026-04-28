@@ -7,7 +7,13 @@ namespace BookMovieTickets.Controllers
 {
     public class HomeController : Controller
     {
-        ApplicationDbContext _context = new ApplicationDbContext();
+        ApplicationDbContext _context;// = new ApplicationDbContext();
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
            
