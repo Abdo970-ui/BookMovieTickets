@@ -1,0 +1,81 @@
+﻿body.auth-bg {
+    background: linear-gradient(135deg, #020617, #0f172a, #1e293b);
+    min-height: 100vh;
+}
+
+/* 💎 Glass Card */
+.auth-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    width: 400px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ✨ Inputs */
+.auth-card input {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+}
+
+.auth-card input:focus {
+    background: rgba(255,255,255,0.12);
+    box-shadow: none;
+    border: 1px solid #6366f1;
+}
+
+.auth-card label {
+    color: #cbd5f5;
+}
+
+/* 🚀 Button */
+.auth-card .btn-primary {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    border: none;
+}
+
+.auth-card .btn-primary:hover {
+    transform: scale(1.03);
+}
+
+/* ✨ Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.login-title {
+    color: #4f46e5;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.custom-check .form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px solid #6c63ff;
+    cursor: pointer;
+}
+
+    .custom-check .form-check-input:checked {
+        background-color: #6c63ff;
+        border-color: #6c63ff;
+    }
+
+    .custom-check .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+    }
+
+.custom-check .form-check-label {
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+}

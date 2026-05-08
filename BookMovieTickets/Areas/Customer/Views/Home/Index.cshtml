@@ -72,6 +72,40 @@
         color: black;
     }
 
+    .movie-card {
+        background: #111;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(77, 171, 247, 0.6);
+        }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: 0.3s;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .movie-card:hover .overlay {
+        opacity: 1;
+    }
+
 </style>
 
 <div class="container-fluid p-4">
@@ -127,16 +161,30 @@
 
         @foreach (var movie in Model.Movies)
         {
-            <div class="movie-card">
+            <a href="/Customer/Home/Details/@movie.Id"
+                   class="text-decoration-none text-white d-block">
 
-                <img src="@Url.Content("~/images/" + movie.MainImg)"
-                     class="movie-img" />
+                <div class="movie-card position-relative">
 
-                <div class="movie-title">
-                    @movie.Name
+                    <img src="@Url.Content("~/images/" + movie.MainImg)"
+                         class="movie-img" />
+
+                    <!-- Overlay -->
+                    <div class="overlay">
+                        View Details
+                    </div>
+
+                    <div class="movie-title text-center">
+                        @movie.Name
+
+                        @* <div class="text-success fw-bold mt-1">
+                            @movie.Price EGP
+                        </div> *@
+                    </div>
+
                 </div>
 
-            </div>
+            </a>
         }
 
     </div>

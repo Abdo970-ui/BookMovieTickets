@@ -4,6 +4,7 @@ using BookMovieTickets.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookMovieTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506203132_AddModelsBokking")]
+    partial class AddModelsBokking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,9 +317,6 @@ namespace BookMovieTickets.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookingId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsBooked")
                         .HasColumnType("bit");
 
@@ -328,8 +328,6 @@ namespace BookMovieTickets.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
 
                     b.HasIndex("ShowTimeId");
 
@@ -565,17 +563,11 @@ namespace BookMovieTickets.Migrations
 
             modelBuilder.Entity("BookMovieTickets.Models.Seat", b =>
                 {
-                    b.HasOne("BookMovieTickets.Models.Booking", "Booking")
-                        .WithMany("Seats")
-                        .HasForeignKey("BookingId");
-
                     b.HasOne("BookMovieTickets.Models.ShowTime", "ShowTime")
                         .WithMany("Seats")
                         .HasForeignKey("ShowTimeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Booking");
 
                     b.Navigation("ShowTime");
                 });
@@ -640,11 +632,6 @@ namespace BookMovieTickets.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BookMovieTickets.Models.Booking", b =>
-                {
-                    b.Navigation("Seats");
                 });
 
             modelBuilder.Entity("BookMovieTickets.Models.Category", b =>

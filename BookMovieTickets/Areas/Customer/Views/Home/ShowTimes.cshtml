@@ -1,0 +1,25 @@
+﻿@using BookMovieTickets.Models
+@model IEnumerable<ShowTime>
+
+<h3>Available ShowTimes</h3>
+
+@foreach (var item in Model)
+{
+    <div class="card p-3 mb-2">
+
+        <h5>@item.StartTime</h5>
+
+        <p>Available Seats: @item.AvailableSeats</p>
+
+        <form method="post" action="/Customer/Home/Book">
+            <input type="hidden" name="showTimeId" value="@item.Id" />
+
+            <input type="number" name="tickets" class="form-control mb-2" min="1" />
+
+            <button class="btn btn-danger">
+                🎟 Book
+            </button>
+        </form>
+
+    </div>
+}

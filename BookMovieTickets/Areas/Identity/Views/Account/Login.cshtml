@@ -1,0 +1,120 @@
+﻿@model BookMovieTickets.ViewModel.LoginVM
+
+@{
+    Layout = "~/Areas/Identity/Views/Shared/_AuthLayout.cshtml";
+
+    ViewData["Title"] = "Login";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card shadow-lg p-4 auth-card">
+
+        <h3 class="text-center mb-4 login-title">🔐 Login</h3>
+
+        <form asp-area="Identity"
+              asp-controller="Account"
+              asp-action="Login"
+              method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <!-- Username or Email -->
+            <div class="mb-3">
+                <label asp-for="UserNameOrEmail"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person"></i>
+                    </span>
+
+                    <input asp-for="UserNameOrEmail"
+                           class="form-control"
+                           placeholder="Username or Email" />
+                </div>
+
+                <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label asp-for="Password"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="Password"
+                           id="loginPasswordInput">
+
+                    <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword('loginPasswordInput', this)">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label"></label>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="btn btn-primary w-100">
+                Login
+            </button>
+
+        </form>
+
+        <div class="text-center mt-3">
+
+            <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="Register"
+                   class="d-block text-decoration-none">
+                Don't have an account? <span class="text-primary fw-bold">Register</span>
+            </a>
+
+            <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="ResendEmailConfirmation"
+                   class="d-block text-decoration-none text-warning small mt-1">
+                Resend email confirmation
+            </a>
+
+            <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="ForgetPassword"
+                   class="d-block text-decoration-none text-info small mt-1">
+                Forgot your password?
+            </a>
+
+        </div>
+
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            const icon = iconElement.querySelector("i");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            }
+        }
+    </script>
+}

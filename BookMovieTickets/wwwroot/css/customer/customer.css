@@ -2,17 +2,14 @@
     background-color: #0f172a;
     color: white;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 /* يخلي المحتوى ياخد المساحة الصح */
-.container {
-    flex: 1;
-}
+
 
 .navbar {
-    background-color: #020617 !important;
+    position: relative;
+    z-index: 9999;
 }
 
 footer {

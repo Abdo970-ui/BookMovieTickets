@@ -1,0 +1,136 @@
+﻿@model BookMovieTickets.ViewModel.RegisterVM
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Areas/Identity/Views/Shared/_AuthLayout.cshtml";
+
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="auth-card">
+
+        <h3 class="text-center mb-4" style="color: #ff4d4d;">
+            Create Account
+        </h3>
+
+        <form asp-area="Identity"
+              asp-controller="Account"
+              asp-action="Register"
+              method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-geo-alt"></i>
+                    </span>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UserName"></label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person-badge"></i>
+                    </span>
+                    <input asp-for="UserName" class="form-control" />
+                </div>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+
+                    <input asp-for="Password" type="password" class="form-control" id="passwordInput">
+
+                    <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword('passwordInput', this)">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-shield-lock"></i>
+                    </span>
+
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPasswordInput">
+
+                    <span class="input-group-text" style="cursor:pointer;" onclick="togglePassword('confirmPasswordInput', this)">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+                Register
+            </button>
+
+            <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="Login"
+                   class="btn btn-link w-100 mt-2 text-decoration-none">
+                Already have an account? Login
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+<script>
+    function togglePassword(inputId, iconElement) {
+        const input = document.getElementById(inputId);
+        const icon = iconElement.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+</script>

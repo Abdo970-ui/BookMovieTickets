@@ -1,0 +1,62 @@
+﻿@model BookMovieTickets.ViewModel.ResendEmailConfirmationVM
+
+@{
+    Layout = "~/Areas/Identity/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Resend Email Confirmation";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card shadow-lg p-4 auth-card">
+
+        <h3 class="text-center mb-4 login-title">
+            📧 Resend Confirmation Email
+        </h3>
+
+        <form asp-area="Identity"
+              asp-controller="Account"
+              asp-action="ResendEmailConfirmation"
+              method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <!-- Email or Username -->
+            <div class="mb-3">
+                <label asp-for="UserNameOrEmail"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+
+                    <input asp-for="UserNameOrEmail"
+                           class="form-control"
+                           placeholder="Enter your email or username" />
+                </div>
+
+                <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-warning w-100 fw-semibold">
+                Resend Email
+            </button>
+
+        </form>
+
+        <div class="text-center mt-3">
+            <a asp-area="Identity"
+                   asp-controller="Account"
+                   asp-action="Login"
+                   class="text-decoration-none">
+                Back to Login
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -85,7 +85,7 @@ namespace BookMovieTickets.Areas.Admin.Controllers
 
             using (var stream = new FileStream(path, FileMode.Create))
             {
-                vm.MainImg.CopyTo(stream);
+               await vm.MainImg.CopyToAsync(stream);
             }
 
             var movie = new Movie
@@ -151,11 +151,13 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 return RedirectToAction("NotFoundPage", "Home");
 
 
-            var categoriesTask =  _categoryRepository.GetAsync();
-            var cinemasTask = _cinemaRepository.GetAsync();
-            var actorsTask = _actorRepository.GetAsync();
+            var categories = await _categoryRepository.GetAsync();
+            var cinemas = await _cinemaRepository.GetAsync();
+            var actors = await _actorRepository.GetAsync();
 
-            await Task.WhenAll(categoriesTask, cinemasTask, actorsTask);
+            //Categories = categories.ToList();
+            //Cinemas = cinemas.ToList();
+            //Actors = actors.ToList();
 
             var vm = new MovieVM
             {
@@ -168,9 +170,9 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 CategoryId = movie.CategoryId,
                 CinemaId = movie.CinemaId,
 
-                Categories = categoriesTask.Result.ToList(),
-                Cinemas = cinemasTask.Result.ToList(),
-                Actors = actorsTask.Result.ToList(),
+                //Categories = categoriesTask.Result.ToList(),
+                //Cinemas = cinemasTask.Result.ToList(),
+                //Actors = actorsTask.Result.ToList(),
 
 
                 ActorIds = movie.Actors.Select(a => a.Id).ToList()
@@ -264,7 +266,7 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 }
             }
             //_context.SaveChanges();
-           await _actorRepository.CommitAsync();
+           await _movieRepository.CommitAsync();
 
             return RedirectToAction(nameof(Index));
         }

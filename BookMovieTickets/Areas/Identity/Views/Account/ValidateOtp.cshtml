@@ -1,0 +1,68 @@
+﻿@model BookMovieTickets.ViewModel.ValidateOtpVM
+
+@{
+    Layout = "~/Areas/Identity/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Verify OTP";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card shadow-lg p-4 auth-card">
+
+        <h3 class="text-center mb-4 login-title">🔐 Verify Code</h3>
+
+        <p class="text-center text-muted small">
+            Enter the OTP sent to your email
+        </p>
+
+        <form asp-area="Identity"
+              asp-controller="Account"
+              asp-action="ValidateOtp"
+              method="post">
+
+            <input type="hidden" asp-for="UserId" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <!-- OTP -->
+            <div class="mb-3">
+                <label asp-for="OTP"></label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-shield-lock"></i>
+                    </span>
+
+                    <input asp-for="OTP"
+                           class="form-control text-center"
+                           placeholder="Enter OTP"
+                           maxlength="6" />
+                </div>
+
+                <span asp-validation-for="OTP" class="text-danger"></span>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="btn btn-success w-100">
+                Verify
+            </button>
+
+        </form>
+
+        <!-- resend -->
+        <div class="text-center mt-3">
+            <a asp-action="ForgetPassword"
+                   asp-controller="Account"
+                   asp-area="Identity"
+                   class="text-decoration-none text-warning">
+                Resend Code
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

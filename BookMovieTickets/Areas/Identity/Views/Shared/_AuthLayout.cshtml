@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Auth</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Auth CSS -->
+    <link href="~/css/identity/auth.css" rel="stylesheet" asp-append-version="true" />
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+</head>
+
+<body class="auth-bg">
+
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        @RenderBody()
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Toast Script -->
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                toastr.success(@Html.Raw(Json.Serialize(TempData["Success"])));
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                toastr.error(@Html.Raw(Json.Serialize(TempData["Error"])));
+            </text>
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>
