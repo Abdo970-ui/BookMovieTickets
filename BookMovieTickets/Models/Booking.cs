@@ -7,7 +7,10 @@
         public int ShowTimeId { get; set; }
         public ShowTime ShowTime { get; set; }
 
+        // 👇 User Relation
         public string UserId { get; set; }
+
+        public ApplicationUser User { get; set; }
 
         public int Tickets { get; set; }
 

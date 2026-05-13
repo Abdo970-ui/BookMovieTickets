@@ -12,7 +12,7 @@ namespace BookMovieTickets.Utilities
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("abdoreyad034@gmail.com", "vgxj syyo xkny lypf")
+                Credentials = new NetworkCredential("abdoreyad034@gmail.com", "tdzy cigf siao triu")
             };
 
 

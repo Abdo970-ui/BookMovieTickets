@@ -1,7 +1,9 @@
 ﻿using BookMovieTickets.Data;
 using BookMovieTickets.Models;
 using BookMovieTickets.Repositories;
+using BookMovieTickets.Utilities.DbSeeder;
 using BookMovieTickets.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -9,6 +11,7 @@ using System.Linq.Expressions;
 namespace BookMovieTickets.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles =$"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}, {CD.EMPLOYEE_ROLE}")]
     public class MoviesController : Controller
     {
         //ApplicationDbContext _context = new ApplicationDbContext();
@@ -46,6 +49,8 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 });
             return View(movies);
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -62,6 +67,8 @@ namespace BookMovieTickets.Areas.Admin.Controllers
 
             return View(vm);
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
 
         [HttpPost]
         public async Task<IActionResult> Create(MovieVM vm)
@@ -130,34 +137,23 @@ namespace BookMovieTickets.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
 
         public async Task<IActionResult> Update(int id)
         {
-            //var test = id;
-            //var movie = _context.Movies
-            //    .Include(m => m.Actors)
-            //    .FirstOrDefault(m => m.Id == id);
-
-            var movie =await _movieRepository.GetOneAsync(
+            var movie = await _movieRepository.GetOneAsync(
                 m => m.Id == id,
-                 includes: new Expression<Func<Movie, object>>[]
-                 {
-                     m => m.Actors
-                    
-                 });
-
+                includes: new Expression<Func<Movie, object>>[]
+                {
+            m => m.Actors,
+            m => m.SubImages,
+            m => m.Category,
+            m => m.Cinema
+                });
 
             if (movie == null)
                 return RedirectToAction("NotFoundPage", "Home");
-
-
-            var categories = await _categoryRepository.GetAsync();
-            var cinemas = await _cinemaRepository.GetAsync();
-            var actors = await _actorRepository.GetAsync();
-
-            //Categories = categories.ToList();
-            //Cinemas = cinemas.ToList();
-            //Actors = actors.ToList();
 
             var vm = new MovieVM
             {
@@ -170,16 +166,17 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 CategoryId = movie.CategoryId,
                 CinemaId = movie.CinemaId,
 
-                //Categories = categoriesTask.Result.ToList(),
-                //Cinemas = cinemasTask.Result.ToList(),
-                //Actors = actorsTask.Result.ToList(),
+                ActorIds = movie.Actors.Select(a => a.Id).ToList(),
 
-
-                ActorIds = movie.Actors.Select(a => a.Id).ToList()
+                Categories = (await _categoryRepository.GetAsync()).ToList(),
+                Cinemas = (await _cinemaRepository.GetAsync()).ToList(),
+                Actors = (await _actorRepository.GetAsync()).ToList()
             };
 
             return View(vm);
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(MovieVM model)
@@ -266,10 +263,14 @@ namespace BookMovieTickets.Areas.Admin.Controllers
                 }
             }
             //_context.SaveChanges();
-           await _movieRepository.CommitAsync();
+
+            _movieRepository.Update(movie);
+            await _movieRepository.CommitAsync();
 
             return RedirectToAction(nameof(Index));
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -282,6 +283,8 @@ namespace BookMovieTickets.Areas.Admin.Controllers
 
             return View(movie);
         }
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Movie movie)

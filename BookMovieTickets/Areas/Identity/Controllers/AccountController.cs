@@ -1,6 +1,8 @@
 ﻿using BookMovieTickets.Models;
 using BookMovieTickets.Repositories;
+using BookMovieTickets.Utilities.DbSeeder;
 using BookMovieTickets.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -105,6 +107,7 @@ namespace BookMovieTickets.Areas.Identity.Controllers
                 "Confirm your email",
                 body
             );
+           await _userManager.AddToRoleAsync(user, CD.CUSTOMER_ROLE);
             return RedirectToAction(nameof(Login));
         }
         [HttpGet]
@@ -149,7 +152,12 @@ namespace BookMovieTickets.Areas.Identity.Controllers
 
             return RedirectToAction("Index" , "Home" , new {area = "Customer"});
         }
-        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+           await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
+        }
+       [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId , string token)
         {
            
@@ -371,6 +379,9 @@ namespace BookMovieTickets.Areas.Identity.Controllers
 
             return RedirectToAction(nameof(Login));
         }
-
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

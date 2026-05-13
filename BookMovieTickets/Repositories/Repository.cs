@@ -44,27 +44,24 @@ namespace BookMovieTickets.Repositories
             return await entities.ToListAsync();
         }
         public async Task<T?> GetOneAsync(
-            Expression<Func<T, bool>>? filter = null,
-            Expression<Func<T, object>>[]? includes = null,
-            bool tracked = true
-            )
+     Expression<Func<T, bool>>? filter = null,
+     Expression<Func<T, object>>[]? includes = null,
+     bool tracked = true
+ )
         {
-            var entities = _dbSet.AsQueryable();
-            // filter 
+            IQueryable<T> entities = _dbSet;
+
             if (filter != null)
-            {
                 entities = entities.Where(filter);
-            }
+
             if (includes != null)
-            {
                 foreach (var include in includes)
                     entities = entities.Include(include);
-            }
+
             if (!tracked)
-            {
                 entities = entities.AsNoTracking();
-            }
-            return await entities.FirstOrDefaultAsync();
+
+            return await entities.FirstOrDefaultAsync(); // هنا تمام بعد الفلتر
         }
         public void Update(T entity)
         {

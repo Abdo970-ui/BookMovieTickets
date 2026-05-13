@@ -1,15 +1,29 @@
-﻿@model IEnumerable<BookMovieTickets.Models.Movie>
+﻿@using BookMovieTickets.Utilities.DbSeeder
+@model IEnumerable<BookMovieTickets.Models.Movie>
 
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Movies";
 }
 
-<h2 class="mb-4">Movies List</h2>
+<div class="text-center py-3">
+    <h3 class="fw-bold text-primary mb-1">Movies List</h3>
+    <small class="text-muted">Browse and manage all movies in the system</small>
+</div>
 
-<a asp-action="Create" class="btn btn-primary mb-3">
-    + Add New Movie
-</a>
+@if (User.IsInRole(CD.SUPER_ADMIN_ROLE) || User.IsInRole(CD.ADMIN_ROLE))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">
+        + Add New Movie
+    </a>
+}
+else
+{
+    <td>
+        No Actions !!
+    </td>
+}
+
 
 <table class="table table-bordered table-hover text-center align-middle">
     <thead class="table-dark">
@@ -18,7 +32,7 @@
             <th>Name</th>
             <th>Category</th>
             <th>Cinema</th>
-            <th>Price</th>
+            <th>Ticket Price</th>
             <th>Status</th>
             <th>Date</th>
             @* <th>Actors</th> *@
@@ -43,7 +57,7 @@
                 <td>@item.Price</td>
 
                 <td>
-                    @if (item.Status)
+                    @if (item.DateTime > DateTime.UtcNow)
                     {
                         <span class="badge bg-success">Active</span>
                     }
@@ -61,14 +75,23 @@
                         <span class="badge bg-secondary">@actor.Name</span>
                     }
                 </td> *@
-
-                <td>
-                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-primary">
-                        Edit
-                    </a>
-                    @* <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a> *@
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
-                </td>
+                @if (User.IsInRole(CD.SUPER_ADMIN_ROLE) || User.IsInRole(CD.ADMIN_ROLE) )
+                {
+                    <td>
+                        <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-primary">
+                            Edit
+                        </a>
+                        @* <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a> *@
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        No Actions !!
+                    </td>
+                }
+                
             </tr>
         }
     </tbody>

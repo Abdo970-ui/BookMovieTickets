@@ -6,50 +6,60 @@
 
 <h2 class="mb-4">Update Movie</h2>
 
-<form asp-area="Admin" asp-controller="Movies" asp-action="Update" method="post" enctype="multipart/form-data">
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-area="Admin"
+      asp-controller="Movies"
+      asp-action="Update"
+      method="post"
+      enctype="multipart/form-data">
 
     <input type="hidden" asp-for="Id" />
 
     <!-- Name -->
     <div class="form-group mb-3">
-        <label>Name</label>
+        <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <!-- Description -->
     <div class="form-group mb-3">
-        <label>Description</label>
+        <label asp-for="Description"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <!-- Price -->
     <div class="form-group mb-3">
-        <label>Price</label>
+        <label asp-for="Price"></label>
         <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
 
     <!-- Status -->
     <div class="form-group mb-3">
-        <label>
-            <input asp-for="Status" type="checkbox" />
+        <label class="form-check">
+            <input asp-for="Status" type="checkbox" class="form-check-input" />
             Available
         </label>
     </div>
 
     <!-- Date -->
     <div class="form-group mb-3">
-        <label>Date</label>
+        <label asp-for="DateTime"></label>
         <input asp-for="DateTime" type="datetime-local" class="form-control" />
+        <span asp-validation-for="DateTime" class="text-danger"></span>
     </div>
 
     <!-- Category -->
     <div class="form-group mb-3">
-        <label>Category</label>
+        <label asp-for="CategoryId"></label>
         <select asp-for="CategoryId" class="form-control">
             <option value="">-- Select Category --</option>
             @foreach (var item in Model.Categories)
             {
-                <option value="@item.Id" selected="@(item.Id == Model.CategoryId)">
+                <option value="@item.Id">
                     @item.Name
                 </option>
             }
@@ -58,12 +68,12 @@
 
     <!-- Cinema -->
     <div class="form-group mb-3">
-        <label>Cinema</label>
+        <label asp-for="CinemaId"></label>
         <select asp-for="CinemaId" class="form-control">
             <option value="">-- Select Cinema --</option>
             @foreach (var item in Model.Cinemas)
             {
-                <option value="@item.Id" selected="@(item.Id == Model.CinemaId)">
+                <option value="@item.Id">
                     @item.Name
                 </option>
             }
@@ -74,22 +84,20 @@
     <div class="form-group mb-3">
         <label>Actors</label>
 
-        <div>
-            @foreach (var actor in Model.Actors)
-            {
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           name="ActorIds"
-                           value="@actor.Id"
-                           @(Model.ActorIds.Contains(actor.Id) ? "checked" : "") />
+        @foreach (var actor in Model.Actors)
+        {
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="ActorIds"
+                       value="@actor.Id"
+                @(Model.ActorIds != null && Model.ActorIds.Contains(actor.Id) ? "checked" : "") />
 
-                    <label class="form-check-label">
-                        @actor.Name
-                    </label>
-                </div>
-            }
-        </div>
+                <label class="form-check-label">
+                    @actor.Name
+                </label>
+            </div>
+        }
     </div>
 
     <!-- Buttons -->

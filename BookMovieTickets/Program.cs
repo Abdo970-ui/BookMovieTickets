@@ -2,6 +2,7 @@
 using BookMovieTickets.Models;
 using BookMovieTickets.Repositories;
 using BookMovieTickets.Utilities;
+using BookMovieTickets.Utilities.DbSeeder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace BookMovieTickets
     public class Program
     {
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             
             var builder = WebApplication.CreateBuilder(args);
@@ -49,9 +50,29 @@ namespace BookMovieTickets
             builder.Services.AddScoped<IRepository<Seat> , Repository<Seat> >();
             builder.Services.AddScoped<IRepository<ShowTime> , Repository<ShowTime> >();
             builder.Services.AddScoped<IRepository<Booking> , Repository<Booking> >();
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                //Changing the defult routes for Identity
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+
+                options.SlidingExpiration = true;
+            });
 
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var inializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                await inializer.InitializeAsnc();
+            }
+
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -60,7 +81,10 @@ namespace BookMovieTickets
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-           
+
+            app.UseStaticFiles();
+
+
             app.UseHttpsRedirection();
             app.UseRouting();
 

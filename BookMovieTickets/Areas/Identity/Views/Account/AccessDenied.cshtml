@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<style>
+    .denied-container {
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;      
+        color: white;
+    }
+
+    .denied-card {
+        text-align: center;
+        background: #161b22;
+        padding: 50px 40px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 0 25px rgba(0,0,0,0.4);
+        border: 1px solid #30363d;
+    }
+
+        .denied-card img {
+            width: 180px;
+            margin-bottom: 25px;
+        }
+
+    .denied-title {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .denied-text {
+        color: #8b949e;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+
+    .home-btn {
+        background: #238636;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .home-btn:hover {
+            background: #2ea043;
+            color: white;
+        }
+</style>
+
+<div class="denied-container">
+    <div class="denied-card">
+
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Access Denied" />
+
+        <div class="denied-title">
+            Access Denied
+        </div>
+
+        <div class="denied-text">
+            You don’t have permission to access this page.
+        </div>
+
+        <a href="/Customer/Home/Index"
+               class="home-btn">
+            Back to Home
+        </a>
+
+    </div>
+</div>

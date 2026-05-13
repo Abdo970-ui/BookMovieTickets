@@ -188,45 +188,92 @@
         }
 
     </div>
-
     <!-- 📄 PAGINATION -->
     @if (Model.TotalPages > 1)
     {
-        <nav>
+        <nav class="mt-5">
             <ul class="pagination justify-content-center">
 
                 <!-- Previous -->
-                @if (Model.Page > 1)
+                <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+
+                    <a class="page-link"
+                           href="/Customer/Home/Index?Page=@(Model.Page - 1)&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
+
+                        Previous
+
+                    </a>
+                </li>
+
+                @{
+                    int startPage = Math.Max(1, Model.Page - 2);
+                    int endPage = Math.Min(Model.TotalPages, Model.Page + 2);
+                }
+
+                <!-- First Page -->
+                @if (startPage > 1)
                 {
                     <li class="page-item">
                         <a class="page-link"
-                           href="/Customer/Home/Index?Page=@(Model.Page - 1)&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-                            Previous
+                               href="/Customer/Home/Index?Page=1">
+
+                            1
+
+                        </a>
+                    </li>
+
+                    @if (startPage > 2)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                }
+
+                <!-- Dynamic Pages -->
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == Model.Page ? "active" : "")">
+
+                        <a class="page-link"
+                               href="/Customer/Home/Index?Page=@i&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
+
+                            @i
+
                         </a>
                     </li>
                 }
 
-                <!-- Pages -->
-                @for (int i = 1; i <= Model.TotalPages; i++)
+                <!-- Last Page -->
+                @if (endPage < Model.TotalPages)
                 {
-                    <li class="page-item @(i == Model.Page ? "active" : "")">
+                    @if (endPage < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+
+                    <li class="page-item">
                         <a class="page-link"
-                           href="/Customer/Home/Index?Page=@i&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-                            @i
+                               href="/Customer/Home/Index?Page=@Model.TotalPages">
+
+                            @Model.TotalPages
+
                         </a>
                     </li>
                 }
 
                 <!-- Next -->
-                @if (Model.Page < Model.TotalPages)
-                {
-                    <li class="page-item">
-                        <a class="page-link"
+                <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+
+                    <a class="page-link"
                            href="/Customer/Home/Index?Page=@(Model.Page + 1)&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-                            Next
-                        </a>
-                    </li>
-                }
+
+                        Next
+
+                    </a>
+                </li>
 
             </ul>
         </nav>

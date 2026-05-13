@@ -1,0 +1,210 @@
+﻿@model BookMovieTickets.ViewModel.ApplicationUserVM
+
+@{
+    ViewData["Title"] = "Profile";
+    ViewBag.IsProfilePage = true;
+}
+
+<style>
+
+    body {
+        background: #0f172a;
+    }
+
+    .profile-container {
+        padding: 40px 15px;
+    }
+
+    .profile-card {
+        background: #111827;
+        border-radius: 20px;
+        border: 1px solid #1f2937;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        max-width: 1200px;
+        margin: auto;
+        overflow: hidden;
+    }
+
+    /* 🔥 HEADER أبسط وأوضح */
+    .profile-header {
+        background: linear-gradient(135deg,#dc2626,#7f1d1d);
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        color: white;
+    }
+
+    .profile-img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid rgba(255,255,255,0.2);
+        background: white;
+    }
+
+    .profile-info h2 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .profile-info p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .profile-body {
+        padding: 30px;
+    }
+
+    .form-control {
+        background: #1f2937;
+        border: 1px solid #374151;
+        color: white;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    label {
+        color: #d1d5db;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .section-title {
+        color: white;
+        font-size: 18px;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .card-dark {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 15px;
+        padding: 20px;
+        height: 100%;
+    }
+
+    .btn-save {
+        background: #dc2626;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        width: 100%;
+    }
+
+</style>
+
+<div class="container-fluid profile-container">
+
+    <div class="profile-card">
+
+        <!-- HEADER -->
+        <div class="profile-header">
+
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                                         ? "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                                                         : "/images/" + Model.ImageUrl)"
+                 class="profile-img" />
+
+            <div class="profile-info">
+                <h2>@Model.Name</h2>
+                <p>@Model.Email</p>
+            </div>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="profile-body">
+
+            <div class="row g-4">
+
+                <!-- LEFT: PROFILE INFO -->
+                <div class="col-12 col-lg-6">
+
+                    <div class="card-dark">
+
+                        <div class="section-title">
+                            Personal Information
+                        </div>
+
+                        <form asp-action="UpdateProfile" enctype="multipart/form-data">
+
+                            <div class="mb-3">
+                                <label>Profile Image</label>
+                                <input asp-for="ProfileImage" type="file" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Name</label>
+                                <input asp-for="Name" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Address</label>
+                                <input asp-for="Address" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Phone</label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Email</label>
+                                <input asp-for="Email" class="form-control bg-dark text-white border-secondary" readonly />
+                            </div>
+
+                            <button class="btn btn-save">
+                                Save Changes
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: PASSWORD -->
+                <div class="col-12 col-lg-6">
+
+                    <div class="card-dark">
+
+                        <div class="section-title">
+                            Change Password
+                        </div>
+
+                        <form asp-action="UpdatePassword">
+
+                            <div class="mb-3">
+                                <label>Current Password</label>
+                                <input asp-for="CurrentPassword" type="password" class="form-control" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label>New Password</label>
+                                <input asp-for="NewPassword" type="password" class="form-control" />
+                            </div>
+
+                            <button class="btn btn-save">
+                                Update Password
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

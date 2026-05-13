@@ -1,0 +1,158 @@
+﻿@using BookMovieTickets.Utilities.DbSeeder
+@model IEnumerable<ApplicationUser>
+
+<style>
+
+    .page-container {
+        padding: 25px;
+    }
+
+    .card-modern {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: none;
+    }
+
+    .page-title {
+        font-weight: 700;
+        font-size: 26px;
+        color: #212529;
+    }
+
+    .table thead {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+        .table thead th {
+            border: none;
+            padding: 14px;
+        }
+
+    .table tbody tr:hover {
+        background: #f8f9fa;
+        transition: .2s;
+    }
+
+    .badge {
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .btn-action {
+        border-radius: 10px;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .user-id {
+        font-size: 12px;
+        color: gray;
+    }
+
+</style>
+
+<div class="container-fluid page-container">
+
+    <div class="card card-modern p-4">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h3 class="page-title mb-0">Users Management</h3>
+                <small class="text-muted">Manage all registered users</small>
+            </div>
+
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>UserName</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <span class="user-id">#@item.Id</span>
+                            </td>
+
+                            <td class="fw-semibold">
+                                @item.Name
+                            </td>
+
+                            <td>
+                                @item.UserName
+                            </td>
+
+                            <td>
+                                @item.Email
+                            </td>
+
+                            <td>
+                                @if (item.EmailConfirmed)
+                                {
+                                    <span class="badge bg-success">Confirmed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Not Confirmed</span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+
+                                @if (User.IsInRole(CD.SUPER_ADMIN_ROLE)
+                                   || User.IsInRole(CD.ADMIN_ROLE))
+                                {
+                                    @if (item.LockoutEnd is null || DateTime.UtcNow > item.LockoutEnd)
+                                    {
+                                        <a href="/Admin/User/LockUnLock/@item.Id"
+                                               class="btn btn-danger btn-sm btn-action">
+                                            🔒 Lock
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Admin/User/LockUnLock/@item.Id"
+                                               class="btn btn-success btn-sm btn-action">
+                                            🔓 Unlock
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Actions</span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
