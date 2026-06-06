@@ -6,6 +6,7 @@ using BookMovieTickets.Utilities.DbSeeder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace BookMovieTickets
 {
@@ -50,6 +51,8 @@ namespace BookMovieTickets
             builder.Services.AddScoped<IRepository<Seat> , Repository<Seat> >();
             builder.Services.AddScoped<IRepository<ShowTime> , Repository<ShowTime> >();
             builder.Services.AddScoped<IRepository<Booking> , Repository<Booking> >();
+            builder.Services.AddScoped<IRepository<Promotion> , Repository<Promotion> >();
+            builder.Services.AddScoped<IRepository<PromotionUsage> , Repository<PromotionUsage> >();
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 
@@ -61,6 +64,11 @@ namespace BookMovieTickets
 
                 options.SlidingExpiration = true;
             });
+
+
+
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 
 
             var app = builder.Build();

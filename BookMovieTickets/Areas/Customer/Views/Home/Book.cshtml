@@ -4,7 +4,6 @@
 @{
     Layout = "~/Areas/Customer/Views/Shared/_Layout.cshtml";
 }
-
 <style>
     body {
         background: #0b0f19;
@@ -112,12 +111,10 @@
 
         <div class="row g-0">
 
-            <!-- Movie Image -->
             <div class="col-md-5">
                 <img src="@Url.Content("~/images/" + Model.Movie.MainImg)" class="movie-image" />
             </div>
 
-            <!-- Booking Info -->
             <div class="col-md-7">
                 <div class="booking-content">
 
@@ -130,12 +127,28 @@
 
                     <div class="info-box">
                         <div class="info-label">Available Seats</div>
-                        <div class="info-value text-success">
+                        <div class="info-value @(Model.StartTime < DateTime.Now || Model.AvailableSeats <= 0 ? "text-danger" : "text-success")">
                             🎟 @Model.AvailableSeats Seats
                         </div>
                     </div>
 
-                    @if (Model.AvailableSeats > 0)
+                    @* 🛠 منطق الفحص الثلاثي (وقت الحفلة أولًا ثم توفر المقاعد) *@
+                    @if (Model.StartTime < DateTime.Now)
+                    {
+                        <div class="alert alert-danger text-center fw-bold border-0 py-2 mb-3" role="alert">
+                            🛑 عذراً، هذه الحفلة انتهت بالفعل ولا يمكن الحجز بها.
+                        </div>
+
+                        <button type="button" class="btn btn-secondary w-100 py-2 fw-bold" style="height: 50px;" disabled>
+                            Booking Closed
+                        </button>
+                        <script>
+                                                window.onload = function() {
+                                                    toastr.info("⏰ عذراً، لقد انتهى وقت هذه الحفلة بالفعل."); // 👈 جربي error أو info وشوفي مين أحلى مع ستايل الفيلم
+                                                };
+                        </script>
+                    }
+                    else if (Model.AvailableSeats > 0)
                     {
                         <form method="post" action="/Customer/Home/ConfirmBooking">
                             <input type="hidden" name="showTimeId" value="@Model.Id" />
@@ -155,8 +168,19 @@
                     }
                     else
                     {
+                        <div class="alert alert-warning text-center fw-bold border-0 py-2 mb-3 text-dark" role="alert">
+                            🚫 نفدت جميع تذاكر هذه الحفلة بالكامل!
+                        </div>
+
+                        <button type="button" class="btn btn-secondary w-100 py-2 fw-bold" style="height: 50px;" disabled>
+                            Sold Out
+                        </button>
+
                         <script>
-                                                toastr.error("🚫 Sold Out! No seats available.");
+                                                // إضافة حماية للتأكيد الفوري عبر التوستر
+                                                window.onload = function() {
+                                                    toastr.error("🚫 Sold Out! No seats available.");
+                                                };
                         </script>
                     }
 
@@ -168,5 +192,4 @@
         </div>
 
     </div>
-
 </div>

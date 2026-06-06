@@ -40,23 +40,35 @@
         border-radius: 10px;
         overflow: hidden;
         transition: 0.3s;
+        cursor: pointer;
+        height: 100%;
     }
 
         .movie-card:hover {
-            transform: scale(1.03);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(77, 171, 247, 0.6);
         }
 
     .movie-img {
         width: 100%;
         height: 300px;
-        object-fit: contain;
+        object-fit: cover;
         background: #000;
     }
 
     .movie-title {
         color: #4dabf7;
-        padding: 10px;
+        padding: 15px 10px;
         font-weight: bold;
+    }
+
+    /* الستايل الخاص بعرض التاريخ تحت العنوان */
+    .movie-date-badge {
+        font-size: 13px;
+        color: #aaa;
+        display: block;
+        margin-top: 6px;
+        font-weight: normal;
     }
 
     .page-link {
@@ -71,19 +83,6 @@
         border-color: #4dabf7;
         color: black;
     }
-
-    .movie-card {
-        background: #111;
-        border-radius: 10px;
-        overflow: hidden;
-        transition: 0.3s;
-        cursor: pointer;
-    }
-
-        .movie-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(77, 171, 247, 0.6);
-        }
 
     .overlay {
         position: absolute;
@@ -112,10 +111,8 @@
 
     <h3 class="text-white mb-4">🎬 Movies</h3>
 
-    <!-- 🔍 FILTER -->
     <form method="get" class="filter-box row g-3">
 
-        <!-- Search -->
         <div class="col-md-4">
             <input type="text"
                    name="MovieName"
@@ -124,7 +121,6 @@
                    placeholder="Search movie..." />
         </div>
 
-        <!-- Cinema -->
         <div class="col-md-3">
             <select name="CinemaId" class="form-select">
                 <option value="">All Cinemas</option>
@@ -139,7 +135,6 @@
             </select>
         </div>
 
-        <!-- Date -->
         <div class="col-md-3">
             <input type="date"
                    name="Date"
@@ -147,7 +142,6 @@
                    class="form-control" />
         </div>
 
-        <!-- Button -->
         <div class="col-md-2">
             <button type="submit" class="btn btn-filter w-100">
                 Filter
@@ -156,20 +150,28 @@
 
     </form>
 
-    <!-- 🎬 MOVIES -->
     <div class="movies-grid">
 
         @foreach (var movie in Model.Movies)
         {
+            // فحص ما إذا كان وقت الفيلم قد انتهى مقارنة بالوقت الحالي
+            bool isEnded = movie.DateTime < DateTime.Now;
+
             <a href="/Customer/Home/Details/@movie.Id"
                    class="text-decoration-none text-white d-block">
 
-                <div class="movie-card position-relative">
+                <div class="movie-card position-relative" style="@(isEnded ? "opacity: 0.55;" : "")">
 
                     <img src="@Url.Content("~/images/" + movie.MainImg)"
                          class="movie-img" />
 
-                    <!-- Overlay -->
+                    @if (isEnded)
+                    {
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2 p-2 fw-bold" style="z-index: 2;">
+                            Ended / منتهي
+                        </span>
+                    }
+
                     <div class="overlay">
                         View Details
                     </div>
@@ -177,9 +179,9 @@
                     <div class="movie-title text-center">
                         @movie.Name
 
-                        @* <div class="text-success fw-bold mt-1">
-                            @movie.Price EGP
-                        </div> *@
+                        <span class="movie-date-badge">
+                            📅 @movie.DateTime.ToString("dd MMM yyyy - hh:mm tt")
+                        </span>
                     </div>
 
                 </div>
@@ -188,20 +190,18 @@
         }
 
     </div>
-    <!-- 📄 PAGINATION -->
+
     @if (Model.TotalPages > 1)
     {
+        // تجميع معاملات التصفية للحفاظ عليها أثناء التنقل بين الصفحات ومنع تصفير الفلتر
+        var queryParams = $"&MovieName={Context.Request.Query["MovieName"]}&CinemaId={Context.Request.Query["CinemaId"]}&Date={Context.Request.Query["Date"]}&CategoryId={Context.Request.Query["CategoryId"]}";
+
         <nav class="mt-5">
             <ul class="pagination justify-content-center">
 
-                <!-- Previous -->
                 <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
-
-                    <a class="page-link"
-                           href="/Customer/Home/Index?Page=@(Model.Page - 1)&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-
+                    <a class="page-link" href="/Customer/Home/Index?Page=@(Model.Page - 1)@queryParams">
                         Previous
-
                     </a>
                 </li>
 
@@ -210,15 +210,11 @@
                     int endPage = Math.Min(Model.TotalPages, Model.Page + 2);
                 }
 
-                <!-- First Page -->
                 @if (startPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link"
-                               href="/Customer/Home/Index?Page=1">
-
+                        <a class="page-link" href="/Customer/Home/Index?Page=1@queryParams">
                             1
-
                         </a>
                     </li>
 
@@ -230,21 +226,15 @@
                     }
                 }
 
-                <!-- Dynamic Pages -->
                 @for (int i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(i == Model.Page ? "active" : "")">
-
-                        <a class="page-link"
-                               href="/Customer/Home/Index?Page=@i&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-
+                        <a class="page-link" href="/Customer/Home/Index?Page=@i@queryParams">
                             @i
-
                         </a>
                     </li>
                 }
 
-                <!-- Last Page -->
                 @if (endPage < Model.TotalPages)
                 {
                     @if (endPage < Model.TotalPages - 1)
@@ -255,28 +245,18 @@
                     }
 
                     <li class="page-item">
-                        <a class="page-link"
-                               href="/Customer/Home/Index?Page=@Model.TotalPages">
-
+                        <a class="page-link" href="/Customer/Home/Index?Page=@Model.TotalPages@queryParams">
                             @Model.TotalPages
-
                         </a>
                     </li>
                 }
 
-                <!-- Next -->
                 <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
-
-                    <a class="page-link"
-                           href="/Customer/Home/Index?Page=@(Model.Page + 1)&MovieName=@Context.Request.Query["MovieName"]&CinemaId=@Context.Request.Query["CinemaId"]&Date=@Context.Request.Query["Date"]&CategoryId=@Context.Request.Query["CategoryId"]">
-
+                    <a class="page-link" href="/Customer/Home/Index?Page=@(Model.Page + 1)@queryParams">
                         Next
-
                     </a>
                 </li>
 
             </ul>
         </nav>
     }
-
-</div>

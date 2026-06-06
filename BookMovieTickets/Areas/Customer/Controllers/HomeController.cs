@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe.Checkout;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 
@@ -25,11 +26,14 @@ namespace BookMovieTickets.Areas.Customer.Controllers
         IRepository<Seat> _setRepository;
         IRepository<ShowTime> _showTimeRepository;
         IRepository<Booking> _bookingRepository;
+        IRepository<Promotion> _promotionRepository;
+        IRepository<PromotionUsage> _promotionUsageRepository;
+        
         
         private readonly UserManager<ApplicationUser> _userManager;
         public readonly IEmailSender _emailSender;
 
-        public HomeController(IRepository<Category> categoryRepository, IRepository<Actor> actorRepository, IRepository<Cinema> cinemaRepository, IRepository<Movie> movieRepository, IRepository<MovieImage> movieImageRepository, IRepository<Seat> setRepository, IRepository<ShowTime> showTimeRepository, IRepository<Booking> bookingRepository, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public HomeController(IRepository<Category> categoryRepository, IRepository<Actor> actorRepository, IRepository<Cinema> cinemaRepository, IRepository<Movie> movieRepository, IRepository<MovieImage> movieImageRepository, IRepository<Seat> setRepository, IRepository<ShowTime> showTimeRepository, IRepository<Booking> bookingRepository, UserManager<ApplicationUser> userManager, IEmailSender emailSender, IRepository<Promotion> promotionRepository, IRepository<PromotionUsage> promotionUsageRepository)
         {
             _categoryRepository = categoryRepository;
             _actorRepository = actorRepository;
@@ -41,6 +45,8 @@ namespace BookMovieTickets.Areas.Customer.Controllers
             _bookingRepository = bookingRepository;
             _userManager = userManager;
             _emailSender = emailSender;
+            _promotionRepository = promotionRepository;
+            _promotionUsageRepository = promotionUsageRepository;
         }
 
         public async Task<IActionResult> Index(FilterMovieVM vm)
@@ -51,7 +57,7 @@ namespace BookMovieTickets.Areas.Customer.Controllers
             //    .AsQueryable();
 
             var query = await _movieRepository.GetAsync(
-                 filter: m => m.Status == true,
+                 filter: m => m.Status == true || m.Status == false,
                   includes: new Expression<Func<Movie, object>>[]
                   {
                        m => m.Category
@@ -108,7 +114,11 @@ namespace BookMovieTickets.Areas.Customer.Controllers
 
             ViewBag.Cinemas = await _cinemaRepository.GetAsync();
             ViewBag.Categories = await _categoryRepository.GetAsync();
-
+            // جلب العروض السارية والمربوطة بأفلام ولم تنتهِ صلاحيتها بعد
+            ViewBag.ActivePromotions = await _promotionRepository.GetAsync(
+                filter: p => p.IsValid == true && DateTime.UtcNow < p.ValidTo,
+                includes: new Expression<Func<Promotion, object>>[] { p => p.Movie } // أو Movie حسب اسم العلاقة عندك
+            );
             return View(vm);
         }
         public async Task<IActionResult> Details(int id)
@@ -365,15 +375,9 @@ namespace BookMovieTickets.Areas.Customer.Controllers
                 body
             );
 
-            await _emailSender.SendEmailAsync(
-                user.Email,
-                "Movie Booking Confirmation",
-                body
-            );
-
             TempData["Success"] = "Booking Confirmed 🎟";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyBookings));
         }
 
 
@@ -537,7 +541,7 @@ namespace BookMovieTickets.Areas.Customer.Controllers
                   line-height:1.8;
                   color:#d1d5db;'>
 
-            Hello <strong>{user.UserName}</strong>,
+            Hello <strong>{user.Name}</strong>,
             <br/><br/>
 
             Your booking for the movie 
@@ -607,6 +611,144 @@ namespace BookMovieTickets.Areas.Customer.Controllers
             TempData["Success"] = "Booking Deleted Successfully";
 
             return RedirectToAction(nameof(MyBookings));
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CheckPromoCode(string code, int currentShowTimeId, decimal currentPrice)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Json(new { success = false, message = "يجب تسجيل الدخول أولاً لتطبيق الخصم!" });
+
+            if (string.IsNullOrEmpty(code))
+            {
+                return Json(new { success = false, message = "يرجى إدخال كود الخصم!" });
+            }
+
+            var promotion = await _promotionRepository.GetOneAsync(p =>
+                p.IsValid == true &&
+                p.Code == code.Trim() &&
+                DateTime.UtcNow < p.ValidTo &&
+                p.MaxUsage > 0
+            );
+
+            if (promotion == null)
+            {
+                return Json(new { success = false, message = "كود الخصم غير صحيح أو انتهت صلاحيته!" });
+            }
+
+            var userBooking = await _bookingRepository.GetOneAsync(b =>
+                b.UserId == user.Id &&
+                b.ShowTimeId == currentShowTimeId
+            );
+
+            if (userBooking == null)
+            {
+                return Json(new { success = false, message = "عذراً، لم نجد حجزاً قائماً لهذا العرض في حسابك لتطبيق الخصم عليه!" });
+            }
+
+            var showTimeWithMovie = await _showTimeRepository.GetOneAsync(s => s.Id == currentShowTimeId);
+            if (showTimeWithMovie != null && promotion.MovieId != showTimeWithMovie.MovieId)
+            {
+                return Json(new { success = false, message = "هذا الكود غير مخصص للفيلم المعروض في هذه الحفلة!" });
+            }
+
+            var alreadyUsed = await _promotionUsageRepository.GetOneAsync(pu =>
+                pu.UserId == user.Id &&
+                pu.PromotionId == promotion.Id
+            );
+
+            if (alreadyUsed != null)
+            {
+                return Json(new { success = false, message = "لقد قمت باستخدام هذا الكود من قبل!" });
+            }
+
+            decimal discountAmount = currentPrice * (promotion.Discount / 100);
+            if (discountAmount > currentPrice)
+                discountAmount = currentPrice;
+
+            decimal finalPrice = currentPrice - discountAmount;
+
+            userBooking.TotalPrice = finalPrice;
+
+            
+            promotion.MaxUsage--;
+
+            var usage = new PromotionUsage
+            {
+                UserId = user.Id,
+                PromotionId = promotion.Id
+            };
+            await _promotionUsageRepository.AddAsync(usage);
+
+            //  حفظ كل العجن ده في الداتا بيز 
+            await _bookingRepository.CommitAsync();
+            await _promotionRepository.CommitAsync();
+            await _promotionUsageRepository.CommitAsync();
+
+            
+            return Json(new
+            {
+                success = true,
+                message = "تم تطبيق كود الخصم وحفظ السعر الجديد بنجاح! 🎉",
+                discount = discountAmount,
+                newPrice = finalPrice
+
+            });
+        }
+        // الدفع 
+        public async Task<IActionResult> Pay(int bookingId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null) return NotFound();
+
+            var booking = await _bookingRepository.GetOneAsync(
+                filter: b => b.Id == bookingId,
+                includes: new Expression<Func<Booking, object>>[]
+                {
+            b => b.ShowTime,
+            b => b.ShowTime.Movie
+                }
+            );
+
+            if (booking is null || booking.ShowTime is null || booking.ShowTime.Movie is null)
+            {
+                return NotFound("بيانات الحجز أو الفيلم غير كاملة.");
+            }
+
+            decimal actualPricePerTicket = booking.TotalPrice / booking.Tickets;
+
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/Home/Success?bookingId={bookingId}",
+                CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/Home/Cancel",
+            };
+
+            var sessionLineItemOptions = new SessionLineItemOptions()
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    Currency = "egp",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = booking.ShowTime.Movie.Name,
+                        Description = $"Booking for {booking.Tickets} tickets - Total paid: {booking.TotalPrice} EGP",
+                    },
+                    UnitAmount = Convert.ToInt64(actualPricePerTicket * 100),
+                },
+                Quantity = booking.Tickets
+            };
+
+            options.LineItems.Add(sessionLineItemOptions);
+
+            var service = new SessionService();
+            Session session = await service.CreateAsync(options);
+
+            return Redirect(session.Url);
         }
 
 

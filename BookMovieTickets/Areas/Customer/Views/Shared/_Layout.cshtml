@@ -4,24 +4,35 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <!-- Toastr -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
-    <!-- Customer CSS -->
     <link rel="stylesheet" href="~/css/customer/customer.css" />
 </head>
-
 <body>
 
     @{
         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
         var action = ViewContext.RouteData.Values["action"]?.ToString();
     }
-
-    <!-- NAVBAR -->
+    @if (ViewBag.ActivePromotions != null)
+    {
+        var promos = ViewBag.ActivePromotions as IEnumerable<BookMovieTickets.Models.Promotion>;
+        if (promos != null && promos.Any())
+        {
+            <div class="bg-danger text-white py-2 overflow-hidden position-relative" style="font-size: 0.95rem; letter-spacing: 1px; border-bottom: 2px solid #ffc107;">
+                <div class="d-flex animate-ticker whitespace-nowrap">
+                    @foreach (var promo in promos)
+                    {
+                        <span class="mx-5 fw-bold">
+                            🎬 خصم @promo.Discount.ToString("0")% على فيلم <span class="text-warning">"@promo.Movie?.Name"</span>! استخدم كود: <span class="badge bg-dark text-warning font-monospace">@promo.Code</span> ⏳ ينتهي قريباً!
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+    }
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
 
         <a class="navbar-brand text-danger fw-bold" href="/Customer/Home/Index">
@@ -42,7 +53,6 @@
             }
             else
             {
-                <!-- 🔥 لو في MyBookings -->
                 @if (controller == "Home" && action == "MyBookings")
                 {
                     <a href="/Customer/Home/Index"
@@ -69,13 +79,11 @@
 
         </div>
     </nav>
-
-    <!-- CONTENT -->
+    
     <div>
         @RenderBody()
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -93,6 +101,8 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>
